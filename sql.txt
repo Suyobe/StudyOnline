@@ -1,0 +1,186 @@
+drop database studySystem_db;
+create database studySystem_db;
+
+use studySystem_db;
+
+create table User_tb
+(
+	Uid varchar(20) primary key unique,
+	password varchar(20) not null	
+)ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+
+create table Class_tb
+(
+	Cid int(10) primary key unique,
+	Cname varchar(20) not null,
+	password varchar(20) not null,
+	Tid varchar(20) not null	
+)ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+
+create table Grade_tb
+(
+	Cid int(10)  not null ,
+	Sid int(10) not null ,
+	Sname varchar(20) not null,
+	primary key (Cid ,Sid),
+	foreign key (Cid) references Class_tb (Cid ) ON DELETE CASCADE
+)ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+
+create table Work_tb
+(
+	Wid int(10) not null,
+	title varchar(40) not null,
+	content varchar(2000),
+	cid int(10) not null,
+	Tid varchar(20) not null,
+	time varchar(50),
+	primary key (Wid ,cid),
+	foreign key (cid) references Class_tb (Cid ) ON DELETE CASCADE
+)ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+create table Score_tb
+(
+	Wid int(10) not null,
+	Sname varchar(20) not null,
+	score int(5) ,
+	foreign key (Wid) references Work_tb(Wid ) ON DELETE CASCADE
+)ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+create table wFile_tb
+(
+	Wid int(10) not null,
+	Sname varchar(20) not null,
+	file_path varchar(100) not null,
+ 	PRIMARY KEY  (Wid,Sname ),
+	foreign key (Wid) references Work_tb(Wid ) ON DELETE CASCADE
+)ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+
+
+CREATE TABLE cFile_table 
+(
+  Cid int(10) not null,
+  file_id int(11) NOT NULL auto_increment,
+  file_name varchar(255) NOT NULL,
+  file_path varchar(255) NOT NULL,
+  file_type varchar(255) NOT NULL default '未分类资源',
+  file_time varchar(255) default NULL,
+  file_size varchar(255) default NULL,
+  file_author varchar(255) default NULL,
+  PRIMARY KEY  (file_id,file_name,file_path),
+ foreign key (Cid) references Class_tb (Cid ) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+CREATE TABLE  msg_tb (
+	Cid int(11) NOT NULL ,
+  	Sname varchar(40) NOT NULL,
+  	creatertime varchar(40) NOT NULL,
+  	content varchar(255) NOT NULL 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+create table attendance_tb
+(
+	Cid int(11) NOT NULL ,
+	sname varchar(20) not null ,
+	PRIMARY KEY  ( Cid,sname),
+	foreign key (Cid) references Class_tb (Cid ) ON DELETE CASCADE
+)ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+//*************************************
+insert into User_tb (Uid , password) values( 'liuyifei', '123456') ;
+select * from User_tb ;
+
+
+insert into Class_tb (Cid , Cname, password ,Tid) values(16212,'java程序设计', '123', 'liuyifei' ) ;
+insert into Class_tb (Cid , Cname, password ,Tid) values(16211,'java程序设计', '123', 'Suyobe') ;
+
+select  Class_tb.Cid,  Cname, Tid from  Class_tb ,Grade_tb where Class_tb.Cid =Grade_tb.Cid and Tid !='Suyobe' and Sname !='Suyobe';
+select Cid,  Cname, Tid from  Class_tb where Tid !='Suyobe' and Cid not in (select Cid from  Grade_tb  where  Sname = 'Suyobe'  ) ;
+
+update Class_tb set sid = 123, Sname ='艾斯'  where Cid = 16219  ;
+update Class_tb set Sname = 'Suyobe' where Tid !='Suyobe';
+select * from  Class_tb where Tid !='Suyobe' and  Sname  != 'Suyobe';
+
+delete from Class_tb where Cid = 16219;
+select * from  Class_tb where  Sname  = 'Suyobe';
+
+select * from Class_tb where Cid = 16219 and password = '123';
+
+select * from Class_tb where Cid in (select Cid from  Grade_tb  where  Sname = 'Suyobe'  ) ;
+
+
+
+
+
+insert  into Grade_tb ( Cid , Sid , Sname ) values ( 16219  , 1614 , 'sss' );
+select * from Grade_tb where Sname ='Suyobe';
+
+
+drop table  Score_tb;
+drop table  Work_tb;
+insert into  Work_tb (Wid , title , content ,cid , Tid , time ) values ( 33 , '实验5' , '刘亦菲是我女朋友' , 16219 , 'liuyifei' , '2019-06-16') ;
+insert into  Work_tb (Wid , title , content ,cid , Tid , time ) values ( 12 , '实验二' , '胡歌真的好帅啊' , 16211 , 'Suyobe' , '2019-06-16') ;
+insert into  Work_tb (Wid , title , content ,cid , Tid , time ) values ( 11 , '实验一' , '林峰真的好帅啊' , 16211 , 'Suyobe' , '2019-06-16') ;
+select * from Work_tb where cid = 16219 ;
+
+
+
+
+select * from wFile_tb where Wid = 2 ;
+
+select Sname from Grade_tb where Cid =  16219;
+insert into Score_tb ( Wid , Sname , score ) values ( 23 , 'Suyobe' , null);
+
+
+update Score_tb set score = 99  where Sname =  'Suyobe';
+
+select * from Score_tb where Sname = 'Suyobe';
+
+select * from Work_tb where cid =16219;
+select Score_tb. Wid , title , content ,cid , Tid , time , score from Work_tb , Score_tb where cid = 16219 and Sname = 'Suyobe' and Score_tb.Wid = Work_tb.Wid ;
+
+
+
+drop table wFile_tb;
+
+insert into wFile_tb ( Wid , Sname , file_path ) values (2,'sss' ,'G:/wampserver/www/StudyOnline/Sfiles/23.jpg'   );
+select * from wFile_tb;
+
+select * from wFile_tb where Wid = 33;
+select wFile_tb.Sname ,Sid , file_path from wFile_tb , Grade_tb   where Wid = 33 and Grade_tb.Sname =  wFile_tb.Sname;
+
+select wFile_tb.Sname ,   file_path ,score from wFile_tb , Score_tb   where  wFile_tb.Wid  = Score_tb.Wid and Score_tb.Sname =  wFile_tb.Sname and wFile_tb.Wid = 33  ;
+
+
+
+drop table cFile_table ;
+
+select * from cFile_table ;
+
+
+
+DROP TABLE msg_tb;
+
+
+insert into msg_tb ( Cid , Sname ,creatertime , content  ) values (16219 , 'huge' , '2019-06-19' , '新年快乐');
+select * from msg_tb ;
+
+
+drop table attendance_tb;
+
+
+insert into attendance_tb (Cid ,  sname,  S2019625) values( 16201 , 'Susyobe', '请假'  );
+
+
+select * from attendance_tb;
+alter table attendance_tb add S20190620 varchar(20) ;
+update attendance_tb set time2 ='请假'  where Sid = 1620123  ;
+select * from attendance_tb where Cid =16219;
+select column_name from information_schema.columns where table_schema='studySystem_db' and table_name='attendance_tb';
+
+
+
+
